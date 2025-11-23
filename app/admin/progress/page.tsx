@@ -1,45 +1,57 @@
-'use client';
+"use client";
 
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, Users, Target, BarChart3 } from 'lucide-react';
-import { Select } from '@/components/ui/select';
+import { Users, Target, BarChart3 } from 'lucide-react';
+import { apiClient } from '@/lib/api/client';
 
-const studentProgress = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    overallProgress: 65,
-    coursesCompleted: 2,
-    videosWatched: 8,
-    quizzesCompleted: 4,
-    currentStreak: 5,
-    languages: [
-      { name: 'Java', progress: 75 },
-      { name: 'Python', progress: 60 },
-      { name: 'PHP', progress: 50 },
-      { name: 'C#', progress: 40 },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    overallProgress: 45,
-    coursesCompleted: 1,
-    videosWatched: 5,
-    quizzesCompleted: 2,
-    currentStreak: 3,
-    languages: [
-      { name: 'Java', progress: 50 },
-      { name: 'Python', progress: 40 },
-      { name: 'PHP', progress: 0 },
-      { name: 'C#', progress: 0 },
-    ],
-  },
-];
+type LanguageProgress = { name: string; progress: number };
+
+type StudentSummary = {
+  id: string;
+  name: string;
+  email: string;
+  overallProgress: number;
+  coursesCompleted: number;
+  videosWatched: number;
+  quizzesCompleted: number;
+  currentStreak: number;
+  languages: LanguageProgress[];
+};
 
 export default function ProgressPage() {
+  const [students, setStudents] = useState<StudentSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    setLoading(true);
+    apiClient
+      .get('/api/admin/progress/students')
+      .then((res) => {
+        if (!mounted) return;
+        setStudents(res.data || []);
+      })
+      .catch((err) => {
+        console.error('Failed to load student progress', err);
+        if (!mounted) return;
+        setError(err?.response?.data?.message || err.message || 'Failed to load data');
+      })
+      .finally(() => {
+        if (!mounted) return;
+        setLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const averageProgress = students.length
+    ? Math.round(students.reduce((s, st) => s + (st.overallProgress || 0), 0) / students.length)
+    : 0;
+
   return (
     <div className="space-y-6">
       <div>
@@ -54,7 +66,7 @@ export default function ProgressPage() {
             <BarChart3 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">55%</div>
+            <div className="text-2xl font-bold text-white">{loading ? '—' : `${averageProgress}%`}</div>
             <p className="text-xs text-slate-400 mt-1">Across all students</p>
           </CardContent>
         </Card>
@@ -65,7 +77,7 @@ export default function ProgressPage() {
             <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-white">{studentProgress.length}</div>
+            <div className="text-2xl font-bold text-white">{loading ? '—' : students.length}</div>
             <p className="text-xs text-slate-400 mt-1">Currently learning</p>
           </CardContent>
         </Card>
@@ -83,7 +95,10 @@ export default function ProgressPage() {
       </div>
 
       <div className="space-y-4">
-        {studentProgress.map((student) => (
+        {loading && <div className="text-slate-400">Loading student progress…</div>}
+        {error && <div className="text-red-500">{error}</div>}
+
+        {!loading && !error && students.map((student) => (
           <Card key={student.id} className="border-slate-800 bg-slate-900/80 backdrop-blur-xl">
             <CardHeader>
               <div className="flex items-center justify-between">
