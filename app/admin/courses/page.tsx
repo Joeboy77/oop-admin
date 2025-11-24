@@ -40,7 +40,6 @@ export default function CoursesPage() {
         const data = res.data;
         setMaterials(Array.isArray(data) ? data : []);
       } catch (err: any) {
-        // axios uses a different cancellation error shape. Treat aborted/canceled requests as non-errors.
         const isCanceled =
           err?.name === 'AbortError' || err?.code === 'ERR_CANCELED' || err?.message === 'canceled';
         if (!isCanceled) {

@@ -29,11 +29,9 @@ export default function QuizzesPage() {
         setLoading(true);
         setError(null);
 
-        // 1) Fetch all lessons, then fetch quizzes for each lesson
         const lessonsRes = await apiClient.get('/api/lessons');
         const lessons: Array<Record<string, unknown>> = lessonsRes.data || [];
 
-        // Fetch quizzes for each lesson in parallel
         const quizzesByLesson = await Promise.all(
           lessons.map(async (lesson) => {
             const l = lesson as Record<string, unknown>;
@@ -42,13 +40,11 @@ export default function QuizzesPage() {
               const res = await apiClient.get(`/api/quizzes/lesson/${lessonId}`);
               return res.data || [];
             } catch {
-              // If a lesson has no quizzes or the request fails, just return empty
               return [];
             }
           })
         );
 
-        // Flatten and dedupe by id
         const flat: Quiz[] = ([] as Quiz[]).concat(...quizzesByLesson);
         const dedup = new Map<string | number, Quiz>();
         flat.forEach((q) => {
