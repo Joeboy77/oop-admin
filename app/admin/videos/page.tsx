@@ -14,7 +14,7 @@ export default function VideosPage() {
   useEffect(() => {
     const fetchVideos = async () => {
       try {
-        const response = await apiClient.get('api/admin/videos');
+        const response = await apiClient.get('api/videos');
         setVideos(response.data);
       } catch (error) {
         console.error('Failed to fetch videos:', error);
