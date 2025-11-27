@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, Target, BarChart3 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Users, Target, BarChart3, ChevronDown, ChevronUp } from 'lucide-react';
 import { apiClient } from '@/lib/api/client';
 
 type LanguageProgress = { name: string; progress: number };
@@ -18,6 +19,88 @@ type StudentSummary = {
   currentStreak: number;
   languages: LanguageProgress[];
 };
+
+// StudentProgressCard Component
+function StudentProgressCard({ student }: { student: StudentSummary }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Card className="border-slate-800 bg-slate-900/80 backdrop-blur-xl">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="text-white">{student.name}</CardTitle>
+            <CardDescription className="text-slate-400">{student.email}</CardDescription>
+          </div>
+          <div className="text-right">
+            <div className="text-2xl font-bold text-primary">{student.overallProgress}%</div>
+            <p className="text-xs text-slate-400">Overall Progress</p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="w-full border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
+        >
+          {isExpanded ? (
+            <>
+              <ChevronUp className="h-4 w-4 mr-2" />
+              View Less
+            </>
+          ) : (
+            <>
+              <ChevronDown className="h-4 w-4 mr-2" />
+              View More
+            </>
+          )}
+        </Button>
+
+        {isExpanded && (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <p className="text-sm text-slate-400">Courses</p>
+                <p className="text-lg font-bold text-white">{student.coursesCompleted}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Videos</p>
+                <p className="text-lg font-bold text-white">{student.videosWatched}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Quizzes</p>
+                <p className="text-lg font-bold text-white">{student.quizzesCompleted}</p>
+              </div>
+              <div>
+                <p className="text-sm text-slate-400">Streak</p>
+                <p className="text-lg font-bold text-white">{student.currentStreak} days</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-slate-300">Progress by Language</p>
+              {student.languages.map((lang) => (
+                <div key={lang.name} className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-300">{lang.name}</span>
+                    <span className="text-slate-400">{lang.progress}%</span>
+                  </div>
+                  <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary transition-all"
+                      style={{ width: `${lang.progress}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function ProgressPage() {
   const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -99,57 +182,7 @@ export default function ProgressPage() {
         {error && <div className="text-red-500">{error}</div>}
 
         {!loading && !error && students.map((student) => (
-          <Card key={student.id} className="border-slate-800 bg-slate-900/80 backdrop-blur-xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-white">{student.name}</CardTitle>
-                  <CardDescription className="text-slate-400">{student.email}</CardDescription>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-primary">{student.overallProgress}%</div>
-                  <p className="text-xs text-slate-400">Overall Progress</p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-slate-400">Courses</p>
-                  <p className="text-lg font-bold text-white">{student.coursesCompleted}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Videos</p>
-                  <p className="text-lg font-bold text-white">{student.videosWatched}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Quizzes</p>
-                  <p className="text-lg font-bold text-white">{student.quizzesCompleted}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Streak</p>
-                  <p className="text-lg font-bold text-white">{student.currentStreak} days</p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-slate-300">Progress by Language</p>
-                {student.languages.map((lang) => (
-                  <div key={lang.name} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-300">{lang.name}</span>
-                      <span className="text-slate-400">{lang.progress}%</span>
-                    </div>
-                    <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-primary transition-all"
-                        style={{ width: `${lang.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <StudentProgressCard key={student.id} student={student} />
         ))}
       </div>
     </div>
