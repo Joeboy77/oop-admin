@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4 relative">
       <Card className="w-full max-w-md border-slate-700 bg-slate-800/50 backdrop-blur-sm">
         <CardHeader className="text-center">
           <div className="mx-auto w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-4">
@@ -120,6 +120,9 @@ export default function AdminLoginPage() {
           </form>
         </CardContent>
       </Card>
+      <div className="absolute bottom-4 text-slate-500 text-sm">
+        Built by @Joe Acheampong
+      </div>
     </div>
   );
 }
