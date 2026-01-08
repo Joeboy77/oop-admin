@@ -95,7 +95,7 @@ export default function ActivityPage() {
         params.append('userId', studentFilter);
       }
       params.append('limit', '100');
-      
+
       const response = await apiClient.get(`/api/admin/activities?${params.toString()}`);
       return response.data;
     }
@@ -111,7 +111,7 @@ export default function ActivityPage() {
 
   const filteredActivities = useMemo(() => {
     if (!activities) return [];
-    
+
     return activities.filter((activity) => {
       const matchesSearch =
         activity.user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -119,7 +119,7 @@ export default function ActivityPage() {
         activity.user.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         activity.action.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       return matchesSearch;
     });
   }, [activities, searchTerm]);
@@ -144,7 +144,7 @@ export default function ActivityPage() {
       </div>
 
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="border-slate-800 bg-slate-900/80 backdrop-blur-xl">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-slate-300">Total Activities</CardTitle>
@@ -200,8 +200,8 @@ export default function ActivityPage() {
                 {filteredActivities.length} activity log{filteredActivities.length !== 1 ? 's' : ''}
               </CardDescription>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-64">
+            <div className="flex flex-col w-full sm:w-auto sm:flex-row items-center gap-3">
+              <div className="relative w-full sm:w-64">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
                   placeholder="Search activities..."
@@ -247,9 +247,9 @@ export default function ActivityPage() {
                       <Icon className="h-5 w-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-1">
                             <User className="h-4 w-4 text-slate-400" />
                             <p className="text-white font-medium">{activity.user.fullName}</p>
                             <span className="text-xs text-slate-500">({activity.user.email})</span>

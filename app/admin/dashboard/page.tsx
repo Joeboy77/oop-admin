@@ -94,8 +94,8 @@ export default function AdminDashboard() {
     );
   }
 
-  const approvalRate = analytics.total > 0 
-    ? ((analytics.approved / analytics.total) * 100).toFixed(1) 
+  const approvalRate = analytics.total > 0
+    ? ((analytics.approved / analytics.total) * 100).toFixed(1)
     : '0';
 
   return (
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border-slate-800 bg-slate-900/80 backdrop-blur-xl">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-slate-300">Total Students</CardTitle>
@@ -278,13 +278,12 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-right">
                       <span
-                        className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                          student.status === 'approved'
+                        className={`inline-block px-2 py-1 rounded text-xs font-medium ${student.status === 'approved'
                             ? 'bg-green-500/20 text-green-500'
                             : student.status === 'pending'
-                            ? 'bg-yellow-500/20 text-yellow-500'
-                            : 'bg-red-500/20 text-red-500'
-                        }`}
+                              ? 'bg-yellow-500/20 text-yellow-500'
+                              : 'bg-red-500/20 text-red-500'
+                          }`}
                       >
                         {student.status}
                       </span>
